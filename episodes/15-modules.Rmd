@@ -92,7 +92,7 @@ loaded in your environment. If you have no modules loaded, you will see a
 message telling you so.
 
 ```bash
-`r config$remote$prompt` module list
+`r config$remote$head_prompt` module list
 ```
 
 ```output
@@ -109,7 +109,7 @@ programs the same way that Bash does, so we can use it to tell us
 where a particular piece of software is stored.
 
 ```bash
-`r config$remote$prompt` which python3
+`r config$remote$head_prompt` which python3
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -132,11 +132,11 @@ before giving up and telling us it can't find it. As with all environment
 variables we can print it out using `echo`.
 
 ```bash
-`r config$remote$prompt` echo $PATH
+`r config$remote$head_prompt` echo $PATH
 ```
 
 ```output
-/cvmfs/pilot.eessi-hpc.org/2020.12/software/x86_64/amd/zen2/software/Python/3.x.y-GCCcore-x.y.z/bin:/cvmfs/pilot.eessi-hpc.org/2020.12/software/x86_64/amd/zen2/software/SQLite/3.31.1-GCCcore-x.y.z/bin:/cvmfs/pilot.eessi-hpc.org/2020.12/software/x86_64/amd/zen2/software/Tcl/8.6.10-GCCcore-x.y.z/bin:/cvmfs/pilot.eessi-hpc.org/2020.12/software/x86_64/amd/zen2/software/GCCcore/x.y.z/bin:/cvmfs/pilot.eessi-hpc.org/2020.12/compat/linux/x86_64/usr/bin:/opt/software/slurm/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/home/user01/.local/bin:/home/user01/bin
+/export/spack/opt/spack/linux-rocky9-x86_64_v3/gcc-11.5.0/python-3.13.1-l4e6fblxgvpiiokcstye4x7puxi4722q/bin:/home/`r config$remote$user`/.local/bin:/export/spack/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
 ```
 
 You'll notice a similarity to the output of the `which` command. In this case,
@@ -205,14 +205,14 @@ compute node).
 ## Solution
 
 ```bash
-`r config$remote$prompt` nano python-module.sh
-`r config$remote$prompt` cat python-module.sh
+`r config$remote$head_prompt` nano python-module.sh
+`r config$remote$head_prompt` cat python-module.sh
 ```
 
 ```output
 `r config$remote$shebang`
+`r if (!is.null(config$sched$flag$qos)) {print(paste(config$sched$comment,config$sched$flag$qos))}`
 `r config$sched$comment` `r config$sched$flag$partition`
-`r if (!is.null(config$sched$flag$qos)) {print(paste(config$sched$comment,config$sched$flag$qos))}
 `r config$sched$comment` `r config$sched$flag$time` 00:00:30
 
 module load `r config$remote$modules$python`
@@ -221,7 +221,7 @@ python3 --version
 ```
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` python-module.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` python-module.sh
 ```
 
 :::::::::::::::::::::::::

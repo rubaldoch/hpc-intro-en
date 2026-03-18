@@ -54,3 +54,6 @@ Gemfile.lock
 scratch/
 .vendor
 .bundle
+# pixi environments
+.pixi/*
+!.pixi/config.toml

@@ -207,8 +207,8 @@ job was submitted.
 ## Solution
 
 ```bash
-`r config$remote$prompt` nano example-job.sh
-`r config$remote$prompt` cat example-job.sh
+`r config$remote$head_prompt` nano example-job.sh
+`r config$remote$head_prompt` cat example-job.sh
 ```
 
 ```output

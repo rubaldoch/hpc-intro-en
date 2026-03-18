@@ -63,7 +63,7 @@ When logging in to a laptop, tablet, or other personal device, a username,
 password, or pattern are normally required to prevent unauthorized access. In
 these situations, the likelihood of somebody else intercepting your password is
 low, since logging your keystrokes requires a malicious exploit or physical
-access. For systems like ``r config$remote$host`` running an SSH server, anybody
+access. For systems like ``r config$remote$login_host`` running an SSH server, anybody
 on the network can log in, or try to. Since usernames are often public or easy
 to guess, your password is often the weakest link in the security chain. Many
 clusters therefore forbid password-based login, requiring instead that you
@@ -310,16 +310,24 @@ See the [PuTTY documentation][putty-agent].
 ### Transfer Your Public Key
 
 ```{r, eval=is.null(config$remote$portal), echo=FALSE, results="asis"}
+port_flag <- if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) {
+  paste0("-P ", config$remote$login_port, " ")
+} else {
+  ""
+}
+
 cat(
-    paste(
-        "```bash\n",
-        config$local$prompt,
-        " scp ~/.ssh/id_ed25519.pub ",
-        config$remote$user,
-        "@",
-        config$remote$login,
-        ":~/\n```",
-        sep="")
+  paste0(
+    "```bash\n",
+    config$local$prompt,
+    " scp ",
+    port_flag,
+    "~/.ssh/id_ed25519.pub ",
+    config$remote$user,
+    "@",
+    config$remote$login_domain,
+    ":~/\n```"
+  )
 )
 ```
 
@@ -342,7 +350,7 @@ cluster. Replace ``r config$remote$user`` with your username or the one
 supplied by the instructors.
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""``r config$remote$user`@`r config$remote$login_domain`
 ```
 
 You may be asked for your password. Watch out: the characters you type after
@@ -362,8 +370,8 @@ on though so we will adopt the following convention:
 
 - ``r config$local$prompt`` when the command is to be entered on a terminal
   connected to your local computer
-- ``r config$remote$prompt`` when the command is to be entered on a
-  terminal connected to the remote system
+- ``r config$remote$login_prompt`` when the command is to be entered on a
+  terminal connected to the remote login node system
 - `$` when it really doesn't matter which system the terminal is connected to.
 
 ## Looking Around Your Remote Home
@@ -380,7 +388,7 @@ may also notice that the current hostname is also part of our prompt!)
 ```
 
 ```output
-`r config$remote$host`
+`r config$remote$login_host`
 ```
 
 So, we're definitely on the remote machine. Next, let's find out where we are
@@ -463,7 +471,7 @@ password for your SSH key.
 ```
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_domain) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""``r config$remote$user`@`r config$remote$login_domain`
 ```
 
 [gh-ssh]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh

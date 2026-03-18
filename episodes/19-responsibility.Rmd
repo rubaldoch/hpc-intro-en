@@ -38,49 +38,49 @@ resources is a natural outcome of the shared nature of these resources. There
 are other things you, as an upstanding member of the community, need to
 consider.
 
-## Be Kind to the Login Nodes
+## Be Kind to the Login and Head Nodes
 
-The login node is often busy managing all of the logged in users, creating and
-editing files and compiling software. If the machine runs out of memory or
-processing capacity, it will become very slow and unusable for everyone. While
-the machine is meant to be used, be sure to do so responsibly -- in ways
-that will not adversely impact other users' experience.
+The login node is often busy managing many simultaneous users, while the head node 
+is typically used for tasks such as creating and editing files or compiling software. 
+If either machine runs out of memory or processing capacity, it can become slow or 
+unusable for everyone. These systems are meant to be used—but always do so responsibly,
+ in ways that do not negatively impact other users.
 
-Login nodes are always the right place to launch jobs. Cluster policies vary,
-but they may also be used for proving out workflows, and in some cases, may
-host advanced cluster-specific debugging or development tools. The cluster may
-have modules that need to be loaded, possibly in a certain order, and paths or
-library versions that differ from your laptop, and doing an interactive test
-run on the head node is a quick and reliable way to discover and fix these
-issues.
+Head nodes are generally the appropriate place to prepare and launch jobs. 
+Cluster policies may vary, but they are often used to prototype workflows 
+and, in some cases, to access advanced debugging or development tools specific 
+to the cluster. You may also need to load modules (sometimes in a specific order) 
+or work with paths and library versions that differ from your local machine. 
+Running small interactive test jobs on the head node is a quick and reliable way 
+to identify and resolve these issues before submitting larger jobs.
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-## Login Nodes Are a Shared Resource
+## Login and Head Nodes Are a Shared Resource
 
-Remember, the login node is shared with all other users and your actions
+Remember, the login and head node are shared with all other users and your actions
 could cause issues for other people. Think carefully about the potential
 implications of issuing commands that may use large amounts of resource.
 
 Unsure? Ask your friendly systems administrator ("sysadmin") if the thing
-you're contemplating is suitable for the login node, or if there's another
+you're contemplating is suitable for the login/head node, or if there's another
 mechanism to get it done safely.
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 You can always use the commands `top` and `ps ux` to list the processes that
-are running on the login node along with the amount of CPU and memory they are
-using. If this check reveals that the login node is somewhat idle, you can
+are running on the login/head node along with the amount of CPU and memory they are
+using. If this check reveals that the head node is somewhat idle, you can
 safely use it for your non-routine processing task. If something goes wrong
 \-- the process takes too long, or doesn't respond -- you can use the
 `kill` command along with the *PID* to terminate the process.
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Login Node Etiquette
+## Login/Head Node Etiquette
 
-Which of these commands would be a routine task to run on the login node?
+Which of these commands would be a routine task to run on the head node?
 
 1. `python physics_sim.py`
 2. `make`
@@ -93,7 +93,7 @@ Which of these commands would be a routine task to run on the login node?
 ## Solution
 
 Building software, creating directories, and unpacking software are common
-and acceptable > tasks for the login node: options #2 (`make`), #3
+and acceptable > tasks for the head node: options #2 (`make`), #3
 (`mkdir`), and #5 (`tar`) are probably OK. Note that script names do not
 always reflect their contents: before launching #3, please
 `less create_directories.sh` and make sure it's not a Trojan horse.
@@ -109,7 +109,7 @@ advice.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-If you experience performance issues with a login node you should report it to
+If you experience performance issues with a login or head node you should report it to
 the system staff (usually via the helpdesk) for them to investigate.
 
 ## Test Before Scaling
@@ -269,15 +269,15 @@ Say you have a "data" folder containing 10,000 or so files, a healthy mix of
 small and large ASCII and binary data. Which of the following would be the
 best way to transfer them to `r config$remote$name`?
 
-1. `scp -r data `r config$remote$user`@`r config$remote$login`:~/`
-2. `rsync -ra data `r config$remote$user`@`r config$remote$login`:~/`
-3. `rsync -raz data `r config$remote$user`@`r config$remote$login`:~/`
+1. `scp `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""` -r data `r config$remote$user`@`r config$remote$login_domain`:~/`
+2. `rsync `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("--port=", config$remote$login_port, " ") else ""` -ra data `r config$remote$user`@`r config$remote$login_domain`:~/`
+3. `rsync `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("--port=", config$remote$login_port, " ") else ""` -raz data `r config$remote$user`@`r config$remote$login_domain`:~/`
 4. `tar -cvf data.tar data;`
 
-   `rsync -raz data.tar `r config$remote$user`@`r config$remote$login`:~/`
+   `rsync `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("--port=", config$remote$login_port, " ") else ""` -raz data.tar `r config$remote$user`@`r config$remote$login_domain`:~/`
 5. `tar -cvzf data.tar.gz data;`
 
-   `rsync -ra data.tar.gz `r config$remote$user`@`r config$remote$login`:~/`
+   `rsync `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("--port=", config$remote$login_port, " ") else ""` -ra data.tar.gz `r config$remote$user`@`r config$remote$login_domain`:~/`
 
 :::::::::::::::  solution
 

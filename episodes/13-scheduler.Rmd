@@ -71,7 +71,7 @@ manner. Our shell script will have three parts:
   name of the machine the script is run on.
 
 ```bash
-`r config$remote$prompt` nano example-job.sh
+`r config$remote$head_prompt` nano example-job.sh
 ```
 
 ```bash
@@ -92,18 +92,18 @@ Run the script. Does it execute on the cluster or just our login node?
 ## Solution
 
 ```bash
-`r config$remote$prompt` bash example-job.sh
+`r config$remote$head_prompt` bash example-job.sh
 ```
 
 ```output
-This script is running on `r config$remote$host`
+This script is running on `r config$remote$head_host`
 ```
 
 :::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-This script ran on the login node, but we want to take advantage of
+This script ran on the head node, but we want to take advantage of
 the compute nodes: we need the scheduler to queue up `example-job.sh`
 to run on a compute node.
 
@@ -114,7 +114,7 @@ a compute node which the queuing system has identified as being
 available to perform the work.
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -128,12 +128,12 @@ status, we check the queue using the command
 ``r config$sched$status` `r config$sched$flag$user``.
 
 ```bash
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 ```output
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-    9 cpubase_b example-   user01  R       0:05      1 node1
+13935 cpu       example-   user01  R       0:05      1 sorgan-cpu6
 ```
 
 We can see all the details of our job, most importantly that it is in the `R`
@@ -176,7 +176,7 @@ script, but the ``r config$sched$flag$name`` option can be used to change the
 name of a job. Add an option to the script:
 
 ```bash
-`r config$remote$prompt` cat example-job.sh
+`r config$remote$head_prompt` cat example-job.sh
 ```
 
 ```bash
@@ -190,13 +190,13 @@ hostname
 Submit the job and monitor its status:
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 ```output
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-   10 cpubase_b hello-wo   user01  R       0:02      1 node1
+13937 cpu       hello-wo   user01  R       0:02      1 sorgan-cpu6
 ```
 
 Fantastic, we've successfully changed the name of our job!
@@ -250,7 +250,7 @@ for it on the cluster.
 ## Solution
 
 ```bash
-`r config$remote$prompt` cat example-job.sh
+`r config$remote$head_prompt` cat example-job.sh
 ```
 
 ```bash
@@ -263,7 +263,7 @@ hostname
 ```
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
 ```
 
 Why are the `r config$sched$name` runtime and `sleep` time not identical?
@@ -279,7 +279,7 @@ killed. Let's use wall time as an example. We will request 1 minute of
 wall time, and attempt to run a job for two minutes.
 
 ```bash
-`r config$remote$prompt` cat example-job.sh
+`r config$remote$head_prompt` cat example-job.sh
 ```
 
 ```bash
@@ -296,17 +296,17 @@ Submit the job and wait for it to finish. Once it is has finished, check the
 log file.
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 ```bash
-`r config$remote$prompt` cat slurm-12.out
+`r config$remote$head_prompt` cat slurm-13937.out
 ```
 
 ```output
 This script is running on ...
-slurmstepd: error: *** JOB 12 ON node1 CANCELLED AT 2021-02-19T13:55:57
+slurmstepd-sorgan-cpu: error: *** JOB 13937 ON sorgan-cpu6 CANCELLED AT 2026-03-17T23:08:48
 DUE TO TIME LIMIT ***
 ```
 
@@ -329,15 +329,15 @@ its job number (remember to change the walltime so that it runs long enough for
 you to cancel it before it is killed!).
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 ```output
-Submitted batch job 13
+Submitted batch job 13938
 
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-   13 cpubase_b long_job   user01  R       0:02      1 node1
+13938       cpu long_job   user01  R       0:02      1 sorgan-cpu6
 ```
 
 Now cancel the job with its job number (printed in your terminal). A clean
@@ -345,9 +345,9 @@ return of your command prompt indicates that the request to cancel the job was
 successful.
 
 ```bash
-`r config$remote$prompt` `r config$sched$del` 38759
+`r config$remote$head_prompt` `r config$sched$del` 13938
 # It might take a minute for the job to disappear from the queue...
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 ```output
@@ -371,15 +371,15 @@ Try submitting multiple jobs and then cancelling them all.
 First, submit a trio of jobs:
 
 ```bash
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
-`r config$remote$prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
+`r config$remote$head_prompt` `r config$sched$submit$name` `r config$sched$submit$options` example-job.sh
 ```
 
 Then, cancel them all:
 
 ```bash
-`r config$remote$prompt` `r config$sched$del` -u `r config$remote$user`
+`r config$remote$head_prompt` `r config$sched$del` -u `r config$remote$user`
 ```
 
 :::::::::::::::::::::::::
@@ -403,7 +403,7 @@ exits. Let's demonstrate this by running the `hostname` command with
 job with `Ctrl-c`.)
 
 ```bash
-`r config$remote$prompt` `r config$sched$interactive` hostname
+`r config$remote$head_prompt` `r config$sched$interactive` hostname
 ```
 
 ```output
@@ -416,7 +416,7 @@ these options are specified on the command-line when starting a job. To submit
 a job that uses 2 CPUs for instance, we could use the following command:
 
 ```bash
-`r config$remote$prompt` `r config$sched$interactive` -n 2 echo "This job will use 2 CPUs."
+`r config$remote$head_prompt` `r config$sched$interactive` -n 2 echo "This job will use 2 CPUs."
 ```
 
 ```output
@@ -435,7 +435,7 @@ went wrong with a previous job. Fortunately, `r config$sched$name` makes it
 easy to start an interactive job with ``r config$sched$interactive``:
 
 ```bash
-`r config$remote$prompt` `r config$sched$interactive` --pty bash
+`r config$remote$head_prompt` `r config$sched$interactive` --pty bash
 ```
 
 You should be presented with a bash prompt. Note that the prompt will likely
@@ -447,8 +447,8 @@ logged on. You can also verify this with `hostname`.
 ## Creating remote graphics
 
 To see graphical output inside your jobs, you need to use X11 forwarding. To
-connect with this feature enabled, use the `-Y` option when you login with
-the `ssh` command, e.g., `ssh -Y `r config$remote$user`@`r config$remote$login``.
+connect with this feature enabled, use the `-X` option when you login with
+the `ssh` command, e.g., `ssh -X `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""``r config$remote$user`@`r config$remote$login_domain``.
 
 To demonstrate what happens when you create a graphics window on the remote
 node, use the `xeyes` command. A relatively adorable pair of eyes should pop

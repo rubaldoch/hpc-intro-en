@@ -33,7 +33,7 @@ life_cycle: 'beta'
 license: 'CC-BY 4.0'
 
 # Link to the source repository for this lesson
-source: 'https://github.com/carpentries-incubator/hpc-intro'
+source: 'https://github.com/rubaldoch/hpc-intro-en.git'
 
 # Default branch of your lesson
 branch: 'main'
@@ -98,7 +98,7 @@ profiles:
 # For this lesson we use a default configuration which should have all
 # configuration and snippet items referenced in the lesson.
 # (snippets are in a subdirectory alongside the configuraton file)
-default_config: episodes/files/customization/HPCC_MagicCastle_slurm/_config_options.yml
+default_config: episodes/files/customization/Sorgan_slurm/_config_options.yml
 
 # Optionally, you can then override this default with (a subset of) customized
 # values that more closely match your system
@@ -112,6 +112,6 @@ default_config: episodes/files/customization/HPCC_MagicCastle_slurm/_config_opti
 # custom_config: episodes/files/customization/Ghastly_Mistakes/_config_options.yml
 
 carpentry_description: Lesson Description
-url: 'https://carpentries-incubator.github.io/hpc-intro/'
+url: 'https://rubaldoch.github.io/hpc-intro-en/'
 analytics: carpentries
 lang: en

@@ -34,32 +34,23 @@ we have to improve the performance of computational tasks.
 If you disconnected, log back in to the cluster.
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, "") else ""` `r config$remote$user`@`r config$remote$login_domain`
+`r config$remote$login_prompt` ssh `r config$remote$head_host`
 ```
 
 ## Install the Amdahl Program
 
-With the Amdahl source code on the cluster, we can install it, which will
-provide access to the `amdahl` executable.
-Move into the extracted directory, then use the Package Installer for Python,
-or `pip`, to install it in your ("user") home directory:
+With the Amdahl source code on the cluster, we can install it to gain access to the `amdahl` executable. Since the Amdahl program is written in Python, we need to load a Python module and create a virtual environment for the installation.
+
+First, load the Python module, create a virtual environment, and activate it. Then, move into the extracted directory, and use the Package Installer for Python(`pip`) to install the program within the environment:
 
 ```bash
-`r config$remote$prompt` cd amdahl
-`r config$remote$prompt` python3 -m pip install --user .
+`r config$remote$head_prompt` module load `r config$module$python`
+`r config$remote$head_prompt` python3 -m venv venv
+`r config$remote$head_prompt` source venv/bin/activate
+`r config$remote$head_prompt_venv` cd amdahl
+`r config$remote$head_prompt_venv` pip install .
 ```
-
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-## Amdahl is Python Code
-
-The Amdahl program is written in Python, and installing or using it requires
-locating the `python3` executable on the login node.
-If it can't be found, try listing available modules using `module avail`,
-load the appropriate one, and try the command again.
-
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ### MPI for Python
 
@@ -79,61 +70,21 @@ then `rsync` it to the cluster, extract, and install:
 
 ```bash
 `r config$local$prompt` wget -O mpi4py.tar.gz https://github.com/mpi4py/mpi4py/releases/download/3.1.4/mpi4py-3.1.4.tar.gz
-`r config$local$prompt` scp mpi4py.tar.gz `r config$remote$user`@`r config$remote$login`:
+`r config$local$prompt` scp `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, "") else ""` mpi4py.tar.gz `r config$remote$user`@`r config$remote$login_domain`:
 # or
-`r config$local$prompt` rsync -avP mpi4py.tar.gz `r config$remote$user`@`r config$remote$login`:
+`r config$local$prompt` rsync `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("--port=", config$remote$login_port, "") else ""` -avP mpi4py.tar.gz `r config$remote$user`@`r config$remote$login_domain`:
 ```
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
-`r config$remote$prompt` tar -xvzf mpi4py.tar.gz  # extract the archive
-`r config$remote$prompt` mv mpi4py* mpi4py        # rename the directory
-`r config$remote$prompt` cd mpi4py
-`r config$remote$prompt` python3 -m pip install --user .
-`r config$remote$prompt` cd ../amdahl
-`r config$remote$prompt` python3 -m pip install --user .
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, "") else ""` `r config$remote$user`@`r config$remote$login_domain`
+`r config$remote$head_prompt` tar -xvzf mpi4py.tar.gz  # extract the archive
+`r config$remote$head_prompt` mv mpi4py* mpi4py        # rename the directory
+`r config$remote$head_prompt` source venv/bin/activate # activate the virtual environment
+`r config$remote$head_prompt_venv` cd mpi4py
+`r config$remote$head_prompt_venv` pip install .
+`r config$remote$head_prompt_venv` cd ../amdahl
+`r config$remote$head_prompt_venv` pip install .
 ```
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-::::::::::::::::::::::::::::::::::::::  discussion
-
-## If `pip` Raises a Warning...
-
-`pip` may warn that your user package binaries are not in your PATH.
-
-```warning
-WARNING: The script amdahl is installed in "${HOME}/.local/bin" which is
-not on PATH. Consider adding this directory to PATH or, if you prefer to
-suppress this warning, use --no-warn-script-location.
-```
-
-To check whether this warning is a problem, use `which` to search for the
-`amdahl` program:
-
-```bash
-`r config$remote$prompt` which amdahl
-```
-
-If the command returns no output, displaying a new prompt, it means the file
-`amdahl` has not been found. You must update the environment variable named
-`PATH` to include the missing folder.
-Edit your shell configuration file as follows, then log off the cluster and
-back on again so it takes effect.
-
-```bash
-`r config$remote$prompt` nano ~/.bashrc
-`r config$remote$prompt` tail ~/.bashrc
-```
-
-```output
-export PATH=${PATH}:${HOME}/.local/bin
-```
-
-After logging back in to `r config$remote$login`, `which` should be able to
-find `amdahl` without difficulties.
-If you had to load a Python module, load it again.
-
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -142,7 +93,44 @@ If you had to load a Python module, load it again.
 Many command-line programs include a "help" message. Try it with `amdahl`:
 
 ```bash
-`r config$remote$prompt` amdahl --help
+`r config$remote$head_prompt_venv` amdahl --help
+```
+
+```error
+Traceback (most recent call last):
+  File "/home/`r config$remote$user`/venv/bin/amdahl", line 5, in <module>
+    from amdahl.amdahl import amdahl
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/amdahl/__init__.py", line 1, in <module>
+    from . import amdahl
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/amdahl/amdahl.py", line 7, in <module>
+    from mpi4py import MPI
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 1262, in _find_spec
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/mpi4py/_mpiabi.py", line 290, in find_spec
+    mpiabi_suffix = _get_mpiabi_suffix(fullname)
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/mpi4py/_mpiabi.py", line 276, in _get_mpiabi_suffix
+    mpiabi = _get_mpiabi()
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/mpi4py/_mpiabi.py", line 258, in _get_mpiabi
+    mpiabi = _get_mpiabi_from_libmpi(libmpi)
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/mpi4py/_mpiabi.py", line 217, in _get_mpiabi_from_libmpi
+    lib = _dlopen_libmpi(libmpi)
+  File "/home/`r config$remote$user`/venv/lib/python3.13/site-packages/mpi4py/_mpiabi.py", line 210, in _dlopen_libmpi
+    raise RuntimeError("\n".join(errors))
+RuntimeError: cannot load MPI library
+/home/`r config$remote$user`/venv/lib/libmpi.so: cannot open shared object file: No such file or directory
+/home/`r config$remote$user`/venv/lib/libmpi.so.12: cannot open shared object file: No such file or directory
+/home/`r config$remote$user`/venv/lib/libmpi.so.40: cannot open shared object file: No such file or directory
+libmpi.so: cannot open shared object file: No such file or directory
+libmpi.so.12: cannot open shared object file: No such file or directory
+libmpi.so.40: cannot open shared object file: No such file or directory
+```
+
+This error message indicates that the `amdahl` program is trying to use the MPI library, but it can't find it. This is a common issue when installing `mpi4py` without having an MPI implementation installed and loaded on the cluster. To fix this, you will need to load the appropriate MPI module on the cluster before running `amdahl`.
+
+```bash
+`r config$remote$head_prompt_venv` module load `r config$remote$modules$mpi`
+`r config$remote$head_prompt_venv` amdahl --help
 ```
 
 ```output
@@ -160,8 +148,8 @@ optional arguments:
                         Random jitter: a float between -1 and +1
 ```
 
-This message doesn't tell us much about what the program *does*, but it does
-tell us the important flags we might want to use when launching it.
+Now, we no longer see the error message. While this message doesn’t tell us much about what the program *does*, 
+it does show the important flags we may want to use when launching it.
 
 ## Running the Job on a Compute Node
 
@@ -175,7 +163,7 @@ As before, use the `r config$sched$name` status commands to check whether your j
 is running and when it ends:
 
 ```bash
-`r config$remote$prompt` `r config$sched$status` `r config$sched$flag$user`
+`r config$remote$head_prompt` `r config$sched$status` `r config$sched$flag$user`
 ```
 
 Use `ls` to locate the output file. The `-t` flag sorts in
@@ -189,7 +177,7 @@ The cluster output should be written to a file in the folder you launched the
 job from. For example,
 
 ```bash
-`r config$remote$prompt` ls -t
+`r config$remote$head_prompt` ls -t
 ```
 
 ```output
@@ -197,15 +185,15 @@ slurm-347087.out  serial-job.sh  amdahl  README.md  LICENSE.txt
 ```
 
 ```bash
-`r config$remote$prompt` cat slurm-347087.out
+`r config$remote$head_prompt` cat slurm-347087.out
 ```
 
 ```output
 Doing 30.000 seconds of 'work' on 1 processor,
 which should take 30.000 seconds with 0.850 parallel proportion of the workload.
 
-  Hello, World! I am process 0 of 1 on `r config$remote$node`. I will do all the serial 'work' for 4.500 seconds.
-  Hello, World! I am process 0 of 1 on `r config$remote$node`. I will do parallel 'work' for 25.500 seconds.
+  Hello, World! I am process 0 of 1 on `r config$remote$compute_host`. I will do all the serial 'work' for 4.500 seconds.
+  Hello, World! I am process 0 of 1 on `r config$remote$compute_host`. I will do parallel 'work' for 25.500 seconds.
 
 Total execution time (according to rank 0): 30.033 seconds
 ```
@@ -366,7 +354,7 @@ S(t_{n}) = \frac{t_{1}}{t_{n}}
 $$
 
 ```bash
-`r config$remote$prompt` for n in 30.033 10.888 7.697; do python3 -c "print(30.033 / $n)"; done
+`r config$remote$head_prompt` for n in 30.033 10.888 7.697; do python3 -c "print(30.033 / $n)"; done
 ```
 
 | Number of CPUs | Speedup       | Ideal |

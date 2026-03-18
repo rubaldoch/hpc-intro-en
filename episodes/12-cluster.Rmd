@@ -89,16 +89,35 @@ single argument.
 
 Go ahead and open your terminal or graphical SSH client, then log in to the
 cluster using your username and the remote computer you can reach from the
-outside world, `r config$remote$location`.
+outside world.
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""``r config$remote$user`@`r config$remote$login_domain`
 ```
 
 Remember to replace ``r config$remote$user`` with your username or the one
 supplied by the instructors. You may be asked for your password. Watch out: the
 characters you type after the password prompt are not displayed on the screen.
 Normal output will resume once you press `Enter`.
+
+The step above logs you in from outside to the cluster network. Now that you are on the same network as the cluster, you can log in to the cluster head node.
+
+```bash
+`r config$remote$login_prompt` ssh `r config$remote$user`@`r config$remote$head_host`
+``` 
+Again, you may be asked for your password. Once you are logged in, you should see a different prompt, indicating that you are now on the cluster head node. 
+
+To avoid typing your password every time you log in, you can set up SSH keys from the login node to the head node in the same way we did from outside to the login node. Refer to the [Connecting to a remote HPC system](episodes/11-connecting) episode for more details.
+
+::: callout
+# Dedicated Login Nodes
+In `r config$remote$name`, there is no direct access to the cluster head node from outside, so you must first log in to the login node and then connect to the head node.
+If you are inside the `r config$organization` network, you can log in to the head node directly.
+
+```bash
+`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$head_domain`
+```
+:::
 
 ## Where Are We?
 
@@ -110,11 +129,11 @@ computer we are logged onto can be checked with the `hostname` command. (You
 may also notice that the current hostname is also part of our prompt!)
 
 ```bash
-`r config$remote$prompt` hostname
+`r config$remote$head_prompt` hostname
 ```
 
 ```output
-`r config$remote$host`
+`r config$remote$head_host`
 ```
 
 ::: challenge
@@ -142,7 +161,7 @@ are you working on?
 Use `pwd` to **p**rint the **w**orking **d**irectory path:
 
 ```bash
-`r config$remote$prompt` pwd
+`r config$remote$head_prompt` pwd
 ```
 
 You can run `ls` to **l**i**s**t the directory contents, though it's
@@ -150,7 +169,7 @@ possible nothing will show up (if no files have been provided). To be sure,
 use the `-a` flag to show hidden files, too.
 
 ```bash
-`r config$remote$prompt` ls -a
+`r config$remote$head_prompt` ls -a
 ```
 
 At a minimum, this will show the current directory as `.`, and the parent
@@ -165,13 +184,12 @@ Individual computers that compose a cluster are typically called *nodes*
 (although you will also hear people call them *servers*, *computers* and
 *machines*). On a cluster, there are different types of nodes for different
 types of tasks. The node where you are right now is called the *head node*,
-*login node*, *landing pad*, or *submit node*. A login node serves as an access
-point to the cluster.
+*master node* or *submit node*. 
 
-As a gateway, it is well suited for uploading and downloading files, setting up
-software, and running quick tests. Generally speaking, the login node should
+The first node you use to login was the *login node*. A login node serves as an access point to the cluster. As a gateway, it is well suited for uploading and downloading files. The *head node*, on the other hand, serves as the primary interface for setting up
+software, and running quick tests. Generally speaking, the head node should
 not be used for time-consuming or resource-intensive tasks. You should be alert
-to this, and check with your site's operators or documentation for details of
+to this, and check our documentation for details of
 what is and isn't allowed. In these lessons, we will avoid running jobs on the
 head node.
 
@@ -203,7 +221,7 @@ For example, we can view all of the worker nodes by running the command
 ``r config$sched$info``.
 
 ```bash
-`r config$remote$prompt` `r config$sched$info`
+`r config$remote$head_prompt` `r config$sched$info`
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -240,7 +258,8 @@ Note that, if you're logged in to the remote computer cluster, you need to
 log out first. To do so, type `Ctrl+d` or `exit`:
 
 ```bash
-`r config$remote$prompt` exit
+`r config$remote$head_prompt` exit
+`r config$remote$login_prompt` exit
 `r config$local$prompt`
 ```
 
@@ -283,16 +302,17 @@ Now compare the resources of your computer with those of the head node.
 :::: solution
 
 ```bash
-`r config$local$prompt` ssh `r config$remote$user`@`r config$remote$login`
-`r config$remote$prompt` nproc --all
-`r config$remote$prompt` free -m
+`r config$local$prompt` ssh `r if (!is.null(config$remote$login_port) && nzchar(config$remote$login_port)) paste0("-p ", config$remote$login_port, " ") else ""``r config$remote$user`@`r config$remote$login_domain`
+`r config$remote$login_prompt` ssh `r config$remote$head_host`
+`r config$remote$head_prompt` nproc --all
+`r config$remote$head_prompt` free -m
 ```
 
 You can get more information about the processors using `lscpu`,
 and a lot of detail about the memory by reading the file `/proc/meminfo`:
 
 ```bash
-`r config$remote$prompt` less /proc/meminfo
+`r config$remote$head_prompt` less /proc/meminfo
 ```
 
 You can also explore the available filesystems using `df` to show **d**isk
@@ -301,7 +321,7 @@ i.e., GB instead of B. The **t**ype flag `-T` shows what kind of filesystem
 each resource is.
 
 ```bash
-`r config$remote$prompt` df -Th
+`r config$remote$head_prompt` df -Th
 ```
 ::::
 :::
