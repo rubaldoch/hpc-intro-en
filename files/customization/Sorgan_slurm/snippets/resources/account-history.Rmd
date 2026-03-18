@@ -1,0 +1,12 @@
+```output
+JobID           JobName  Partition    Account  AllocCPUS      State ExitCode 
+------------ ---------- ---------- ---------- ---------- ---------- -------- 
+13952          solo-job        cpu      users          1  COMPLETED      0:0 
+13952.batch       batch                 users          1  COMPLETED      0:0 
+13953        parallel-+        cpu      users          4  COMPLETED      0:0 
+13953.batch       batch                 users          4  COMPLETED      0:0 
+13953.0      hydra_pmi+                 users          4  COMPLETED      0:0 
+13954        parallel-+        cpu      users          8  COMPLETED      0:0 
+13954.batch       batch                 users          8  COMPLETED      0:0 
+13954.0      hydra_pmi+                 users          8  COMPLETED      0:0 
+```

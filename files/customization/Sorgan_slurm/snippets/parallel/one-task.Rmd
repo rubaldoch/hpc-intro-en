@@ -1,0 +1,26 @@
+```bash
+`r config$remote$head_prompt` nano serial-job.sh
+`r config$remote$head_prompt` cat serial-job.sh
+```
+
+```bash
+`r config$remote$shebang`
+`r config$sched$comment` `r config$sched$flag$name` solo-job
+`r config$sched$comment` `r config$sched$flag$queue` `r config$sched$queue$testing`
+`r config$sched$comment` -N 1
+`r config$sched$comment` -n 1
+
+# Load the computing environment we need
+module load `r config$remote$modules$python`
+module load `r config$remote$modules$mpi`
+
+# Activate the virtual environment
+source ~/venv/bin/activate
+
+# Execute the task
+amdahl
+```
+
+```bash
+`r config$remote$head_prompt` `r config$sched$submit$name` serial-job.sh
+```

@@ -1,0 +1,8 @@
+```bash
+`r config$remote$head_prompt` module load `r config$remote$modules$python`
+`r config$remote$head_prompt` which python3
+```
+
+```output
+/export/spack/opt/spack/linux-rocky9-x86_64_v3/gcc-11.5.0/python-3.13.1-l4e6fblxgvpiiokcstye4x7puxi4722q/bin/python3
+```
