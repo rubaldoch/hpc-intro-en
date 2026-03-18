@@ -1,0 +1,31 @@
+```bash
+`r config$remote$head_prompt` module avail | less
+```
+
+```output
+----------------------- /export/spack/share/spack/modules/linux-rocky9-x86_64_v3 -----------------------
+   abseil-cpp/20240722.0        gdb/15.2                           mpich/4.2.3-ucx
+   apptainer/1.3.6              git-filter-repo/2.38.0             neovim/stable
+   casacore/3.6.1               graphviz/12.1.0                    neovim/0.10.2         (D)
+   ccache/4.10.2                hyperfine/1.18.0                   ninja/1.12.1
+   cfitsio/4.5.0                intel-oneapi-vtune/2025.0.1        npm/9.3.1
+   cmake/3.31.4          (D)    lazygit/0.44.1                     nvhpc/24.11
+   cuda/12.1.1                  libaio/0.3.113                     openblas/0.3.29
+   cuda/12.6.3           (D)    libffi/3.4.6                       openmpi/2.1.6-ofi-ucx
+   cutlass/3.4.1                liburing/2.3                       python/3.11.2
+   ffmpeg/7.1                   llvm/17.0.6                        python/3.13.1         (D)
+   gcc/10.4.0                   llvm/19.1.6                 (D)    ucx/1.17.0
+   gcc/13.3.0                   mold/2.36.0                        valgrind/3.23.0
+   gcc/14.2.0            (D)    moreutils/0.65
+
+-------------------------------------- /opt/ohpc/pub/modulefiles ---------------------------------------
+   cmake/3.24.2    gnu14/14.2.0    hwloc/2.11.1    os    pmix/4.2.9
+
+---------------------------------- /scratch/share/rchavez/modulefiles ----------------------------------
+   spack/1.0
+
+  Where:
+   D:  Default Module
+
+If the avail list is too long consider trying:
+```

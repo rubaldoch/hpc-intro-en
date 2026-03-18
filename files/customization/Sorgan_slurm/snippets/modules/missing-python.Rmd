@@ -1,0 +1,27 @@
+If the `python3` command was unavailable, we would see output like
+
+```output
+/usr/bin/which: no python3 in (/home/`r config$remote$user`/.local/bin:/export/spack/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)
+```
+
+Note that this wall of text is really a list, with values separated
+by the `:` character. The output is telling us that the `which` command
+searched the following directories for `python3`, without success:
+
+```output
+/home/`r config$remote$user`/.local/bin
+/export/spack/bin
+/usr/local/bin
+/usr/bin
+/usr/local/sbin
+/usr/sbin
+```
+
+However, in our case we do have an existing `python3` available so we see
+
+```output
+/usr/bin/python3
+```
+
+We need a different Python than the system provided one though, so let us load
+a module to access it.
