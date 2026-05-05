@@ -361,7 +361,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Running a parallel job</h1>
-        <p>Last updated on 2026-04-28 |
+        <p>Last updated on 2026-05-05 |
 
         <a href="https://github.com/rubaldoch/hpc-intro-en.git/edit/main/episodes/17-parallel.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -895,13 +895,13 @@ write its output first, except that it will <em>not</em> be process
 </div>
 </div>
 <p>Now, let’s summarize the amount of time it took each job to run:</p>
-<table class="table"><thead><tr class="header"><th>Number of CPUs</th>
+<table class="table"><thead><tr><th>Number of CPUs</th>
 <th>Runtime (sec)</th>
-</tr></thead><tbody><tr class="odd"><td>1</td>
+</tr></thead><tbody><tr><td>1</td>
 <td>30.033</td>
-</tr><tr class="even"><td>4</td>
+</tr><tr><td>4</td>
 <td>10.888</td>
-</tr><tr class="odd"><td>8</td>
+</tr><tr><td>8</td>
 <td>7.697</td>
 </tr></tbody></table><p>Then, use the first row to compute speedups <span class="math inline">\(S\)</span>, using Python as a command-line
 calculator and the formula</p>
@@ -913,16 +913,16 @@ S(t_{n}) = \frac{t_{1}}{t_{n}}
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" tabindex="-1" aria-label="code-block-31-1"></a><span class="ex">[yourUsername@sorgan</span> ~]$ for n in 30.033 10.888 7.697<span class="kw">;</span> <span class="cf">do</span> <span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print(30.033 / </span><span class="va">$n</span><span class="st">)"</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre>
 </div>
-<table class="table"><thead><tr class="header"><th>Number of CPUs</th>
+<table class="table"><thead><tr><th>Number of CPUs</th>
 <th>Speedup</th>
 <th>Ideal</th>
-</tr></thead><tbody><tr class="odd"><td>1</td>
+</tr></thead><tbody><tr><td>1</td>
 <td>1.0</td>
 <td>1</td>
-</tr><tr class="even"><td>4</td>
+</tr><tr><td>4</td>
 <td>2.75</td>
 <td>4</td>
-</tr><tr class="odd"><td>8</td>
+</tr><tr><td>8</td>
 <td>3.90</td>
 <td>8</td>
 </tr></tbody></table><p>The job output files have been telling us that this program is
@@ -1019,8 +1019,8 @@ linearly.</li>
   "url": "https://rubaldoch.github.io/hpc-intro-en/instructor/17-parallel.html",
   "identifier": "https://rubaldoch.github.io/hpc-intro-en/instructor/17-parallel.html",
   "dateCreated": "2017-03-24",
-  "dateModified": "2026-04-28",
-  "datePublished": "2026-04-28"
+  "dateModified": "2026-05-05",
+  "datePublished": "2026-05-05"
 }
 
   </script><script>
